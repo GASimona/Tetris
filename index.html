@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tetris</title>
+</head>
+<style>
+    td {
+        width: 20px;
+        height: 20px;
+
+    }
+
+    table {
+        padding-top: 19px;
+        padding-bottom: 19px;
+        border: solid 5px black;
+        background-color: rgb(108, 112, 116);
+    }
+
+    tr,
+    td {
+        margin: 0px;
+        border: solid 2px;
+        padding: 0px;
+    }
+
+    .name {
+        text-align: center;
+        font-size: 30px;
+        background-color: darkseagreen;
+    }
+
+    .latimetabel {
+        float: left;
+        width: 40%;
+        height: 700px;
+        background-color: darkslategrey;
+    }
+
+    .stanga {
+        height: 700px;
+        width: 30%;
+        background-color: darkslategrey;
+        float: left;
+    }
+
+    .dreapta {
+        height: 700px;
+        background-color: darkslategrey;
+    }
+
+    body {
+        background-color: darkseagreen;
+    }
+</style>
+
+<body>
+    <div class="name">
+        <b>Tetris</b>
+    </div>
+    <div class="stanga">
+    </div>
+    <div class="latimetabel">
+        <center>
+            <table id="tab"></table>
+        </center>
+    </div>
+    <div class="dreapta">
+        <center>
+            <br>
+            <br>
+            <br>
+            <table id="tab2"></table>
+        </center>
+    </div>
+    <br>
+    <br>
+    <p>
+        <center>
+            <i>By Simona</i>
+        </center>
+    </p>
+    <script type="text/javascript" src="piese.js"></script>
+    <script>
+        var nl = 25;
+        var nc = 16;
+        var STANGA = 0;
+        var DREAPTA = 1;
+        var SUS = 2;
+        var JOS = 3;
+        var dx = [0, 0, -1, 1];
+        var dy = [-1, 1, 0, 0];
+        var directie = JOS;
+        var tabel = document.getElementById('tab');
+        var tabel2 = document.getElementById('tab2');
+        var a = 0;
+        var xnou = 0;
+        var ynou = 0;
+        var xvechi = 0;
+        var yvechi = 0;
+        var pn = [];
+        var pn2 = [];
+        var stareTabla = [];
+        var viteza = 300;
+        var miscare = 0;
+
+
+        function tabelJoc() {
+            for (i = 0; i < nl; ++i) {
+                var lin = document.createElement('tr');
+                tabel.appendChild(lin);
+                for (j = 0; j < nc; ++j) {
+                    var col = document.createElement('td');
+                    lin.appendChild(col);
+                    tabel.children[i].children[j].style.background = 'rgb(108, 112, 116)';
+                }
+            }
+        }
+
+
+        function tabelPiese() {
+            for (i = 0; i < 4; ++i) {
+                var lin = document.createElement('tr');
+                tabel2.appendChild(lin);
+                for (j = 0; j < 4; ++j) {
+                    var col = document.createElement('td');
+                    lin.appendChild(col);
+                    tabel2.children[i].children[j].style.background = "rgb(108, 112, 116)";
+                }
+            }
+        }
+
+        function NuAmAjunsSus() {
+            for (j = 0; j < nc; ++j) {
+                if (stareTabla[3][j]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function adaugaPiesa() {
+            if (NuAmAjunsSus()) {
+                a = Math.floor(Math.random() * p.length);
+                coloreazaPiesa(p[a]);
+                pa = p[a];
+                pn = [];
+                pn2.push({ pn });
+                for (var i = 0; i < 4; ++i) {
+                    pn[i] = { x: pa[i].x, y: pa[i].y + 6 };
+                }
+            }
+            else {
+                clearInterval(miscare);
+            }
+        }
+
+        function stergeCuloriDinTabelMic() {
+            for (var i = 0; i < 4; ++i) {
+                for (var j = 0; j < 4; ++j) {
+                    tabel2.children[i].children[j].style.background = "rgb(108, 112, 116)";
+                }
+            }
+
+        }
+
+        function AmOLinieCompleta() {
+            for (i = nl - 1; i >= 0; --i) {
+                var t = 0;
+                for (j = 0; j < nc; ++j) {
+                    if (stareTabla[i][j] == true) {
+                        t = t + 1;
+                    }
+                }
+                if (t == nc) {
+                    stergeLinia(i);
+                    recompleteazaTabelul(i);
+                }
+
+            }
+        }
+
+        function stergeLinia(i) {
+            for (j = 0; j < nc; ++j) {
+                tabel.children[i].children[j].style.background = "rgb(108, 112, 116)";
+            }
+        }
+
+        function recompleteazaTabelul(i2) {
+            for (i = i2; i >= 0; --i) {
+                for (j = 0; j < nc; ++j) {
+                    tabel.children[i].children[j].style.background = tabel.children[i - 1].children[j].style.background;
+                    stareTabla[i][j] = stareTabla[i - 1][j];
+                }
+            }
+        }
+
+        function coloreazaPiesa(p) {
+            stergeCuloriDinTabelMic();
+
+            for (i = 0; i < p.length; ++i) {
+                var x = p[i].x;
+                var y = p[i].y;
+                mutaPiesaInJoc(x, y + 6);
+
+                tabel2.children[x].children[y].style.background = "rgb(93, 158, 32)";
+            }
+
+        }
+        function mutaPiesaInJoc(x, y) {
+            tabel.children[x].children[y].style.background = "rgb(93, 158, 32)";
+
+        }
+        function stergePiesa(pn) {
+            for (i = 0; i < pn.length; ++i) {
+                xvechi = pn[i].x;
+                yvechi = pn[i].y;
+                tabel.children[xvechi].children[yvechi].style.background = "rgb(108, 112, 116)";
+            }
+        }
+        function amAjunsJos() {
+            for (i = 0; i < 4; ++i) {
+                if (pn[i].x == (nl - 1)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function ActiuneaPeCareOFacCandAjungJos() {
+            completeazaStareTabla();
+            AmOLinieCompleta();
+            adaugaPiesa();
+        }
+
+        function initializareStareTabla() {
+            for (i = 0; i < nl; ++i) {
+                stareTabla[i] = [];
+                for (j = 0; j < nc; ++j) {
+                    stareTabla[i][j] = false;
+                }
+            }
+        }
+
+        function completeazaStareTabla() {
+            for (i = 0; i < 4; ++i) {
+                var q = pn[i].x;
+                var w = pn[i].y;
+                stareTabla[q][w] = true;
+            }
+        }
+
+        function SuntPestePieseOprite(directie) {
+            for (i = 0; i < 4; ++i) {
+                xnou = ((pn[i].x) + dx[directie]);
+                ynou = ((pn[i].y) + dy[directie]);
+                if (stareTabla[xnou][ynou] == true) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function PiesaIeseDinJoc(directie) {
+            for (i = (pn.length - 1); i >= 0; --i) {
+                ynou = ((pn[i].y) + dy[directie]);
+                xnou = pn[i].x + dx[directie];
+                if (ynou >= nc || (ynou < 0)) {
+                    return true;
+                }
+
+                if (xnou == nl) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function deplaseazaPiesa(directie) {
+            if (!PiesaIeseDinJoc(directie)) {
+                if (!SuntPestePieseOprite(directie)) {
+                    stergePiesa(pn);
+                    for (i = (pn.length - 1); i >= 0; --i) {
+                        xnou = ((pn[i].x) + dx[directie]);
+                        ynou = ((pn[i].y) + dy[directie]);
+                        tabel.children[xnou].children[ynou].style.background = "rgb(93, 158, 32)";
+                        pn[i].x = xnou;
+                        pn[i].y = ynou;
+                    }
+                }
+                else {
+                    if (directie == JOS) {
+                        ActiuneaPeCareOFacCandAjungJos();
+                    }
+                }
+            } else {
+                if (directie == JOS) {
+                    ActiuneaPeCareOFacCandAjungJos();
+                }
+            }
+
+        }
+        function start() {
+            if (miscare == 0) {
+                miscare = setInterval(pasMiscareTimp, viteza);
+            }
+        }
+
+        function pasMiscareTimp() {
+            deplaseazaPiesa(JOS);
+        }
+
+
+
+        tabelJoc();
+        tabelPiese();
+        initializareStareTabla();
+        adaugaPiesa();
+        start();
+
+
+    </script>
+    <script type="text/javascript" src="taste.js"></script>
+
+
+</body>
+
+</html>
